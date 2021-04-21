@@ -1,5 +1,5 @@
 import { effect, stop } from "./effect.js";
-import { hasChanged, isFunction } from "./utils.js";
+import { hasChanged, isFunction, isArray, isObject } from "./utils.js";
 
 const INITIAL_WATCHER_VALUE = {}
 
@@ -21,6 +21,11 @@ export function watch(source, cb, { immediate, deep, flush } = {}) {
         getter = () => source()
     } else {
         getter = () => source
+        deep = true;
+    } 
+    if (deep) {
+        const baseGetter = getter;
+        getter = () => traverse(baseGetter());
     }
 
     // 定义失效函数
@@ -83,3 +88,21 @@ export function watch(source, cb, { immediate, deep, flush } = {}) {
         stop(runner);
     }
 }
+
+
+function traverse(value, seen = new Set()) {
+    if (!isObject(value) || seen.has(value)) {
+      return value
+    }
+    seen.add(value)
+    if (isArray(value)) {
+      for (let i = 0; i < value.length; i++) {
+        traverse(value[i], seen)
+      }
+    } else {
+      for (const key in value) {
+        traverse(value[key], seen)
+      }
+    }
+    return value
+  }

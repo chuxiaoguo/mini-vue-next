@@ -22,7 +22,7 @@ class ComputedRefImpl {
     constructor(getter, setter) {
         this.effect = effect(getter, {
             lazy: true,
-            scheduler() {
+            scheduler: () => {
                 // _dirty 为false，说明是缓存的数据
                 if (!this._dirty) {
                     this._dirty = true
