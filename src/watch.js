@@ -1,5 +1,5 @@
-import { effect, stop } from "./effect";
-import { hasChanged, isFunction } from "./utils";
+import { effect, stop } from "./effect.js";
+import { hasChanged, isFunction } from "./utils.js";
 
 const INITIAL_WATCHER_VALUE = {}
 
@@ -32,7 +32,7 @@ export function watch(source, cb, { immediate, deep, flush } = {}) {
     }
 
     // 定义job，job就是执行用户的回调函数，但是执行回调前，会执行清楚函数
-    const oldValue = INITIAL_WATCHER_VALUE;
+    let oldValue = INITIAL_WATCHER_VALUE;
     const job = () => {
         const newValue = runner();
         if (deep || hasChanged(newValue, oldValue)) {

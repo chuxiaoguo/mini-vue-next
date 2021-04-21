@@ -63,21 +63,21 @@ export function track(target, key) {
     }
 
     // 取得或生成对象的依赖map
-    const depsMap = targetMap.get(target);
+    let depsMap = targetMap.get(target);
     if (!depsMap) {
-        targetMap.set(target, depsMap = new Map());
+        targetMap.set(target, (depsMap = new Map()));
     }
 
     // 取得或生成对象key的set
-    const deps = depsMap.get(key);
+    let deps = depsMap.get(key);
     if (!deps) {
-        depsMap.set(key, deps = new Set());
+        depsMap.set(key, (deps = new Set()));
     }
 
     // key中不包括该活动副作用，添加该活动副作用
     if (!deps.has(activeEffect)) {
         deps.add(activeEffect);
-        activeEffect.deps.push(add);
+        activeEffect.deps.push(deps);
     }
 }
 
@@ -86,18 +86,20 @@ export function trigger(target, key) {
     const depsMap = targetMap.get(target);
 
     // 没有依赖就直接返回
-    if (!targetMap) {
+    if (!depsMap) {
         return;
     }
 
     // 创建副作用集合
     const effects = new Set();
     const add = (effectsToAdd) => {
-        effectsToAdd.forEach(effect => {
-            if (effect !== activeEffect) {
-                effects.add(effect);
-            }
-        });
+        if (effectsToAdd) {
+            effectsToAdd.forEach(effect => {
+                if (effect !== activeEffect) {
+                    effects.add(effect);
+                }
+            });
+        }
     }
 
     // 收集属性下的所有副作用，这里只考虑修改和添加属性

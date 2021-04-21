@@ -1,5 +1,5 @@
-import { track, trigger } from './effect';
-import { hasChanged } from './utils';
+import { track, trigger } from './effect.js';
+import { hasChanged } from './utils.js';
 export function reactive(target) {
     // if (target && target._v_isReadonly) {
     //     return target;
